@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "DEBUG=*& nodemon app.js",
-    "debug": "DEBUG=* nodemon app.js"
+    "debug": "DEBUG=* nodemon app.js",
+    "dev": "nodemon -L app.js"
   },
   "nodemonConfig": {
     "restartable": "rs",
@@ -29,10 +30,15 @@
     "mongoos": "^0.0.1-security",
     "mongoose": "^7.5.1",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.9",
     "nodemon": "^3.0.1",
     "path": "^0.12.7",
-    "pdfkit": "^0.13.0"
+    "pdfkit": "^0.13.0",
+    "redis": "^3.1.2"
   },
   "keywords": [],
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@types/redis": "^4.0.11"
+  }
 }

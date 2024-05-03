@@ -3,11 +3,13 @@ const debug = require("debug");
 const cors = require("cors");
 // const green = require('chalk');
 const multer = require("multer");
+const nodemailer = require("nodemailer");
 const fs = require("fs");
 const AWS = require("aws-sdk");
 const bcrypt = require("bcryptjs");
 const { MongoClient, GridFSBucket } = require("mongodb");
 const mongoose = require("mongoose");
+// const redis = require("redis");
 const upload = multer();
 require("./db/config");
 const User = require("./db/User");
@@ -19,9 +21,19 @@ const jwtKey = "e-comm";
 
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello My Node Application");
-});
+// const client = redis.createClient({
+//   host: "redis",
+//   port: "6379",
+// });
+
+// client.set("visitsCounter", 0);
+// app.get("/", (req, res) => {
+//   res.send("Hello My Node Application");
+//   client.get("visitsCounter", (err, visitsCounter) => {
+//     res.send("Visits ctr: " + visitsCOunter);
+//     client.set("visitCOunter", parseInt(visitsCounter) + 1);
+//   });
+// });
 
 app.use(express.json());
 app.use(cors());
@@ -86,19 +98,18 @@ app.post(
   upload.array("productPictures", 5),
   async (req, res) => {
     const files = req.files;
+    if (!files) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
     try {
-      // Access other form data (productName, price, etc.) from req.body
       const jsonData = JSON.parse(req.body.jsonData);
 
-      // Create an array to store all base64 encoded images
       const imageArray = [];
-
-      // Loop through each file and convert it to base64
       for (const file of files) {
         imageArray.push(file.buffer.toString("base64"));
       }
 
-      // Create and save product with images to database
       const product = new Product({
         name: jsonData.name,
         price: jsonData.price,
@@ -108,11 +119,17 @@ app.post(
         description: jsonData.description,
         rating: jsonData.rating,
         productPictures: imageArray,
+        discountPercentage: jsonData.discountPercentage,
+        discountPrice: jsonData.discountPrice
       });
 
       const result = await product.save();
-      res.send(result);
+
+      res.status(200).json({
+        message: "File uploaded, product added, and email sent successfully",
+      });
     } catch (error) {
+      console.error(error);
       res.status(500).send("Error adding product");
     }
   }
