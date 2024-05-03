@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-redundant-roles */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { Fragment, useState } from "react";
+import { Fragment, useState, useContext } from "react";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -8,16 +8,22 @@ import {
   ShoppingBagIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { InputBase } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
-import { styled } from "@mui/material/styles";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import { ExpandMore } from "@mui/icons-material";
+import CartCountContext from "../contexts/CartCountContext";
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  SearchIconWrapper,
+  StyledInputBase,
+  Search,
+} from "./Search.styles";
+
 
 const navigation = {
   categories: [
@@ -154,49 +160,10 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const Search = styled("div")(({ theme }) => ({
-  flexGrow: 0.4,
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  border: "1px solid #777",
-  "&:hover": {
-    border: "1px solid #333",
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: "266px",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(3),
-    width: "330px",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "#777",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("md")]: {
-      width: "20ch",
-    },
-  },
-}));
-
-export default function FilterNavBar({ count }) {
+export default function FilterNavBar() {
+  const cartCounter = useSelector((state) => state.cart.cartCounter);
+  const dispatch = useDispatch();
+  // const history = useHistory();
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const auth = localStorage.getItem("user");
@@ -204,6 +171,8 @@ export default function FilterNavBar({ count }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const openSearch = Boolean(anchorEl);
+
+  const [cartCount] = useContext(CartCountContext);
 
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
@@ -687,7 +656,7 @@ export default function FilterNavBar({ count }) {
                         aria-hidden="true"
                       />
                       <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                        {count}
+                        {cartCounter}
                       </span>
                       <span className="sr-only">items in cart, view bag</span>
                     </a>

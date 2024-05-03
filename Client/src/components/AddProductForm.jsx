@@ -4,15 +4,18 @@ import {
   Container,
   Alert,
   Snackbar,
+  MenuItem,
   Stack,
   TextField,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { PhotoIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
+import Header from "./Header";
 
 const Form = () => {
   const [inputs, setInputs] = useState({});
+  const [isInStock, setIsInStock] = useState(false);
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState({});
   const userValidation = JSON.parse(localStorage.getItem("user")).admin;
@@ -29,6 +32,10 @@ const Form = () => {
   };
 
   const onSubmit = async () => {
+    const price = parseFloat(inputs.price);
+    const discount = parseFloat(inputs.discountPercentage);
+    const discountPrice = price - (price * discount) / 100;
+
     const formData = new FormData();
     // formData.append("productPicture", selectedFile);
     for (let i = 0; i < selectedFile.length; i++) {
@@ -36,7 +43,7 @@ const Form = () => {
     }
     const userId = JSON.parse(localStorage.getItem("user"))._id;
 
-    formData.append("jsonData", JSON.stringify({ ...inputs, userId }));
+    formData.append("jsonData", JSON.stringify({ ...inputs, userId, discountPrice }));
     const response = await fetch("http://localhost:4000/add-product", {
       method: "post",
       body: formData,
@@ -68,8 +75,12 @@ const Form = () => {
   };
 
   return (
-    <Box className="contact" id="contact">
+    <Box>
       <Container>
+        <Header
+          title="Admin Product Form"
+          subTitle="Add new product to the website"
+        />
         {userValidation ? (
           <Box
             onSubmit={handleSubmit(onSubmit)}
@@ -114,6 +125,23 @@ const Form = () => {
             </Stack>
 
             <TextField
+              error={Boolean(errors.description)}
+              helperText={
+                Boolean(errors.description)
+                  ? "Please provide a valid Description"
+                  : null
+              }
+              {...register("description", {
+                required: true,
+              })}
+              label="Product Description"
+              variant="filled"
+              onChange={handleChange}
+              multiline
+              rows={4}
+            />
+
+            <TextField
               error={Boolean(errors.category)}
               helperText={
                 Boolean(errors.category)
@@ -146,21 +174,6 @@ const Form = () => {
             />
 
             <TextField
-              error={Boolean(errors.company)}
-              helperText={
-                Boolean(errors.company)
-                  ? "Please provide a valid Description"
-                  : null
-              }
-              {...register("description", {
-                required: true,
-              })}
-              label="Product Description"
-              variant="filled"
-              onChange={handleChange}
-            />
-
-            <TextField
               error={Boolean(errors.rating)}
               helperText={
                 Boolean(errors.rating) ? "Please provide a valid number" : null
@@ -169,6 +182,53 @@ const Form = () => {
                 required: true,
               })}
               label="Product Rating"
+              variant="filled"
+              onChange={handleChange}
+            />
+
+            <Stack sx={{ gap: 2 }} direction={"row"}>
+              <TextField
+                {...register("availability")}
+                select
+                label="Availability"
+                variant="filled"
+                fullWidth
+                value={isInStock ? "In Stock" : "Out of Stock"}
+                onChange={(e) => setIsInStock(e.target.value === "In Stock")}
+                sx={{ flex: 1 }}
+              >
+                <MenuItem value="In Stock">In Stock</MenuItem>
+                <MenuItem value="Out of Stock">Out of Stock</MenuItem>
+              </TextField>
+
+              {isInStock && (
+                <TextField
+                  error={Boolean(errors.stockQuantity)}
+                  helperText={
+                    Boolean(errors.stockQuantity)
+                      ? "Please provide a valid stock quantity"
+                      : null
+                  }
+                  {...register("stockQuantity", { required: true })}
+                  fullWidth
+                  label="Stock Quantity"
+                  variant="filled"
+                  sx={{ flex: 1 }}
+                />
+              )}
+            </Stack>
+
+            <TextField
+              error={Boolean(errors.discountPercentage)}
+              helperText={
+                Boolean(errors.discountPercentage)
+                  ? "Please provide a valid discount percentage"
+                  : null
+              }
+              {...register("discountPercentage", {
+                pattern: /^\d+$/,
+              })}
+              label="Discount Percentage"
               variant="filled"
               onChange={handleChange}
             />
@@ -193,7 +253,7 @@ const Form = () => {
                           className="sr-only"
                           type="file"
                           onChange={handleFileChange}
-                          multiple 
+                          multiple
                         />
                       </label>
                     </form>

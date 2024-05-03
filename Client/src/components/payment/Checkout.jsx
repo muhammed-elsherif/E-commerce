@@ -147,7 +147,7 @@ export default function Checkout({ cartItems }) {
             </React.Fragment>
           )}
         </Paper>
-        <pre>{JSON.stringify(formValues, null, 2)}</pre>{" "}
+        {/* <pre>{JSON.stringify(formValues, null, 2)}</pre>{" "} */}
         {/* Display form values */}
         <Copyright />
       </Container>

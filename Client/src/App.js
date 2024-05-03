@@ -1,30 +1,24 @@
 import "./App.css";
 import { Outlet } from "react-router-dom";
 import FilterNavBar from "./components/FilterNavBar";
-import Checkout from "./components/payment/Checkout";
 import Hero from "./components/hero/Hero";
 import SimpleSlider from "./components/Slider/Slider";
 import ComplexSlider from "./components/Slider/Slider2";
-import ProductList from "./components/main/ProductList";
 import Footer from "./components/Footer";
-import FileUploadForm from "./components/testBlob";
-import React, { useState, useEffect } from "react";
-import { Component } from "react";
+import React, { useState, useEffect, useContext, lazy } from "react";
+import CardCountContext from "./contexts/CartCountContext";
 import { useLocation } from "react-router-dom";
-import { Buffer } from "buffer";
+import { useDispatch } from "react-redux";
+import ProductSales from "./components/products/ProductSales";
+// import ProductCard from "./components/product-card/product-card.component";
+
+const ProductList = lazy(() => import("./components/products/ProductList"));
 
 function App() {
+  // const dispatch = useDispatch();
   const location = useLocation();
   const auth = localStorage.getItem("user");
-  const [cartCount, setCartCount] = useState(0);
-  const [cartItems, setCartItems] = useState([]);
-
-  useEffect(() => {
-    const counters = JSON.parse(localStorage.getItem("cartCounts"));
-    if (counters) {
-      setCartCount(counters);
-    }
-  }, []);
+  const [cartCount] = useContext(CardCountContext);
 
   useEffect(() => {
     if (cartCount) {
@@ -33,27 +27,6 @@ function App() {
   }, [cartCount]);
 
   const [user, setUser] = useState({});
-
-  const handleClickBuyNow = (productId) => {
-    const isProductInCart = cartItems.some(
-      (item) => item.productId === productId
-    );
-
-    if (!isProductInCart) {
-      // Add the product to the cart
-      setCartCount((prevCount) => prevCount + 1);
-      setCartItems((prevItems) => [...prevItems, { productId }]);
-    }
-    console.log("cart: " + cartCount);
-    console.log(
-      "Product IDs:",
-      cartItems.map((item) => item.productId)
-    );
-  };
-
-  // useEffect(() => {
-  //   fetchUserData();
-  // }, []);
 
   const fetchUserData = async () => {
     try {
@@ -84,17 +57,22 @@ function App() {
   //   console.log(imageUrl);
   return (
     <div className="App">
-      <FilterNavBar count={cartCount} />
+      <FilterNavBar />
       {auth && location.pathname === "/" ? (
         <>
           <Hero />
-          <SimpleSlider />
+          {/* https://blackbox.ai/share/331c5926-1923-4a84-a628-c092e0bec58f */}
+          {/* <SimpleSlider />
           <br />
           <br />
           <br />
           <br />
-          <ComplexSlider /> <ProductList onClickBuyNow={handleClickBuyNow} />
+          <ComplexSlider /> */}
+          <ProductSales />
+          <ProductList />
+          {/* <ProductCard /> */}
           {/* <Checkout cartItems={cartItems} /> */}
+          <Footer />
         </>
       ) : (
         <Outlet />
@@ -106,7 +84,6 @@ function App() {
       </div> */}
       {/* <NavBar /> */}
       {/* <Form /> */}
-      <Footer />
     </div>
   );
 }

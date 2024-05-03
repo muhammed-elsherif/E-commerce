@@ -22,7 +22,7 @@ const ComplexSlider = () => {
     centerPadding: "200px",
     centerMode: true,
     slidesToShow: 3,
-    slidesToScroll: 5,
+    slidesToScroll: 1,
     lazyLoad: true,
     asNavFor: ".slider-nav",
     focusOnSelect: true,
