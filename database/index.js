@@ -92,6 +92,27 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.put("/admin", async (req, res) => {
+  const userId = req.body;
+
+  try {
+    // Find the user by userId and update their admin status
+    let user = await User.findOne(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    user.admin = true;
+    let result = await user.save();
+
+    res.json({ message: "User is now an admin" });
+    
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server Error" });
+  }
+});
+
 // app.post("/add-product", upload.single("productPicture"), async (req, res) => {
 app.post(
   "/add-product",
