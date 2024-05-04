@@ -10,6 +10,7 @@ import CardCountContext from "./contexts/CartCountContext";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import ProductSales from "./components/products/ProductSales";
+import Admin from "./components/Admin";
 // import ProductCard from "./components/product-card/product-card.component";
 
 const ProductList = lazy(() => import("./components/products/ProductList"));
@@ -73,6 +74,7 @@ function App() {
           {/* <ProductCard /> */}
           {/* <Checkout cartItems={cartItems} /> */}
           <Footer />
+          <Admin />
         </>
       ) : (
         <Outlet />
