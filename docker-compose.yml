@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: ./backend
+    container_name: backend_c
+    ports:
+      - "4000:4000"
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/e-commerce
+      
+  frontend:
+    build: ./frontend
+    container_name: frontend_c
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URI=http://backend:4000
+
+  mongodb:
+    image: mongo
+    container_name: mongo_c
+    ports:
+      - "27017:27017"
+
