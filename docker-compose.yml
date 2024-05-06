@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   backend:
     build: ./backend
@@ -7,20 +7,33 @@ services:
       - "4000:4000"
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/e-commerce
-      
+    networks:
+      - my-network
+
   frontend:
     build: ./frontend
     container_name: frontend_c
     ports:
-      - '3000:3000'
+      - "3000:3000"
     depends_on:
       - backend
     environment:
       - REACT_APP_API_URI=http://backend:4000
+    networks:
+      - my-network
 
   mongodb:
     image: mongo
     container_name: mongo_c
     ports:
       - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - my-network
 
+networks:
+  my-network:
+
+volumes:
+  mongo-data:
