@@ -9,6 +9,8 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017/e-commerce
     networks:
       - my-network
+    depends_on:
+      - mongodb
 
   frontend:
     build: ./frontend
