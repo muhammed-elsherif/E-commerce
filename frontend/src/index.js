@@ -3,16 +3,17 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import SignUp from "./components/signUp/SignUp";
-import Form from "./components/AddProductForm";
-import Login from "./components/SignIn/Login";
-import Logout from "./components/Logout";
+import SignUp from "./pages/signUp/SignUp";
+import Form from "./pages/add-product/AddProductForm";
+import Login from "./pages/SignIn/Login";
+import Logout from "./components/logout/Logout";
 import PrivateComponent from "./components/PrivateComponent";
-import UpdateProduct from "./components/UpdateProduct";
-import ShoppingCart from "./components/ShoppingCart";
+import UpdateProduct from "./pages/signUp/UpdateProduct";
+import ShoppingCart from "./pages/cart/ShoppingCart";
 import PaymentMethod from "./components/payment/Checkout";
 import ProductList from "./components/products/ProductList";
 import NotFound from "./pages/notFound/NotFound";
+import Profile from "./pages/profile/profile";
 import Loader from "./components/Loader";
 import Spinner from './components/spinner/spinner'
 import CartCountContext from "./contexts/CartCountContext";
@@ -29,7 +30,7 @@ import {
   RouterProvider,
   BrowserRouter,
 } from "react-router-dom";
-import DeleteProduct from "./components/DeleteProduct";
+import DeleteProduct from "./components/delete-product/DeleteProduct";
 import ImagesSlider from "./components/ImagesSlider";
 import ProductDetails from "./components/products/ProductDetails";
 
@@ -61,6 +62,7 @@ const AppRouter = () => {
         <Route path="products" element={<ProductList />} />
         <Route path="checkout" element={<PaymentMethod />} />
         <Route path="shopping-cart" element={<ShoppingCart />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     )
