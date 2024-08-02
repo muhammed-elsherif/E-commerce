@@ -9,6 +9,8 @@ const productSchema = new mongoose.Schema({
   description: String,
   rating: Number,
   productPictures: [String], // For base64 string
+  discountPercentage: Number, // Field to store discount percentage
+  discountPrice: Number, // Field to store discount percentage
 });
 
 module.exports = mongoose.model("products", productSchema);
