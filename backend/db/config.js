@@ -1,11 +1,17 @@
 const mongoose = require("mongoose");
 
 // const connectDB = async ()=>{
-
-// mongoose.connect("mongodb://mongodb:27017/e-commerce");
+// mongoose.connect("mongodb://localhost:27017/e-commerce");
 mongoose.connect(process.env.MONGODB_URI);
-//     const product = mongoose.model('product', productSchema);
-//     const data = await product.find();
-//     console.warn(data);
+// mongoose.connect("mongodb://mongodb:27017/e-commerce");
+
+// const mongoDBUri =
+//   "mongodb+srv://obli:kdvZaOq7RWmwir4k@cluster0.philcn1.mongodb.net/e-commerce";
+
+// mongoose.connect(mongoDBUri, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// });
+
 // }
 // connectDB();
