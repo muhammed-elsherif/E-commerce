@@ -1,0 +1,133 @@
+
+app.post(
+  "/api/upload/base64",
+  upload.single("profilePicture"),
+  async (req, res) => {
+    const file = req.file;
+    console.log(file);
+    try {
+      // Convert the file buffer to a base64 string
+      // const base64Data = file.buffer.toString("base64");
+      const image = new Image({
+        // profilePicture: base64Data,
+        profilePicture: file.buffer.toString("base64"),
+      });
+
+      // let image = new Image(req.body);
+      let result = await image.save();
+
+      // Remove the temporary file
+      fs.unlinkSync(file.path);
+
+      res.json({ message: "Image uploaded successfully" });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  }
+);
+
+app.post("/api/retrieve/base64", async (req, res) => {
+  try {
+    let images = await Image.findOne({ _id: "65132e66bcd07de5507d4e09" });
+    if (images.length > 0) {
+      res.send(images);
+      // res.send(images.profilePicture);
+    } else {
+      res.send({ result: "No images Found" });
+    }
+  } catch (error) {
+    res.status(500).send("Error loading product list");
+  }
+});
+
+app.get("/api/retrieve/base64", async (req, res) => {
+  try {
+    const image = await Image.findOne({ _id: "65132e66bcd07de5507d4e09" });
+    if (image) {
+      res.send(image);
+      // res.send(image.profilePicture);
+    } else {
+      res.send({ result: "No image found" });
+    }
+  } catch (error) {
+    res.status(500).send("Error retrieving image");
+  }
+});
+app.get("/api/getImage/blob", async (req, res) => {
+  try {
+    const image = await Image.findOne({ _id: "6515a86f9171314b2c313e75" });
+    if (image) {
+      res.send(image);
+      // res.send(image.profilePicture);
+    } else {
+      res.send({ result: "No image found" });
+    }
+  } catch (error) {
+    res.status(500).send("Error retrieving image");
+  }
+});
+//////////////////////////////////////////////////////////////////////////////////////
+
+// Handle file upload
+app.post(
+  "/api/upload/blob",
+  upload.single("profilePicture"),
+  async (req, res) => {
+    try {
+      const file = req.file; // Access the uploaded file's Buffer data
+      console.log(file);
+      // Create a new document and save the Blob data
+      const image = new Image({ profilePicture: file.buffer });
+      const result = await image.save();
+      // res.send(result);
+      res.status(200).json({ message: "File uploaded successfully" });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ error: "Failed to upload file" });
+    }
+  }
+);
+
+// Example: Uploading image to Amazon S3
+// app.post(
+//   "/api/upload/cloud",
+//   upload.single("profilePicture"),
+//   async (req, res) => {
+//     const file = req.file;
+
+//     // Set up AWS S3 credentials
+//     AWS.config.update({
+//       accessKeyId: "your-access-key",
+//       secretAccessKey: "your-secret-access-key",
+//     });
+
+//     const s3 = new AWS.S3();
+
+//     try {
+//       // Upload the file to Amazon S3
+//       const uploadParams = {
+//         Bucket: "your-bucket-name",
+//         Key: file.originalname,
+//         Body: file.buffer,
+//         ACL: "public-read",
+//       };
+
+//       const { Location } = await s3.upload(uploadParams).promise();
+
+//       // Create a new user with the profile picture URL
+//       const user = new User({
+//         name: req.body.name,
+//         profilePictureUrl: Location,
+//       });
+
+//       // Save the user to MongoDB
+//       await user.save();
+
+//       res.json({ message: "Image uploaded successfully" });
+//     } catch (error) {
+//       console.error("Error uploading image:", error);
+//       res.status(500).json({ error: "Failed to upload image" });
+//     }
+//   }
+// );

@@ -2,23 +2,22 @@ import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { useNavigate, useParams } from "react-router-dom";
+import { productsApi } from "../../services/api";
 
 export default function DeleteProduct() {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const params = useParams();
   const cancelButtonRef = useRef(null);
-  const handleDelete = async (id) => {
-    const response = await fetch(`http://localhost:4000/product/${params.id}`, {
-      method: "delete",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const result = await response.json();
-    if (result) {
+
+  const handleDelete = async () => {
+    try {
+      await productsApi.delete(params.id);
       alert("Product deleted successfully");
-      navigate("/products")
+      navigate("/products");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("Error deleting product");
     }
   };
 

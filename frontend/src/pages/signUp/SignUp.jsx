@@ -3,50 +3,63 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import bgImg from "./Register-Background.png";
+import authService from "../../services/authService";
+import { Typography } from "@mui/material";
 
 const regEmail =
   /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [inputs, setInputs] = useState({});
+  const [error, setError] = useState('');
+  const [passwordMatch, setPasswordMatch] = useState(true);
+
   useEffect(() => {
-    const auth = localStorage.getItem("user");
-    if (auth) {
+    const isAuthenticated = authService.isAuthenticated();
+    if (isAuthenticated) {
       navigate("/");
     }
-  });
-  const [inputs, setInputs] = useState({});
+  }, [navigate]);
 
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
     setInputs((values) => ({ ...values, [name]: value }));
+    setError('');
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    
+    // Validate email
     if (!regEmail.test(inputs.email)) {
-      alert("Please enter a valid email address.");
+      setError("Please enter a valid email address.");
       return;
     }
-    const response = await fetch("http://localhost:4000/register", {
-      method: "post",
-      body: JSON.stringify(inputs),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Error registering user");
+
+    // Validate password match
+    if (inputs.password !== inputs.confirmPassword) {
+      setPasswordMatch(false);
+      setError("Passwords do not match.");
+      return;
     }
-    const result = await response.json();
-    console.log("Sign up" + result);
-    if (result) {
-      localStorage.setItem("user", JSON.stringify(result.result));
-      localStorage.setItem("token", JSON.stringify(result.auth));
+    setPasswordMatch(true);
+
+    try {
+      const userData = {
+        name: inputs.name,
+        email: inputs.email,
+        password: inputs.password
+      };
+      
+      await authService.register(userData);
       navigate("/");
+    } catch (error) {
+      setError(error.error || 'Registration failed. Please try again.');
     }
   };
+
   return (
     <div
       className="min-h-screen py-40"
@@ -71,7 +84,7 @@ const SignUp = () => {
           <div className="w-full lg:w-1/2 py-16 px-12">
             <h2 className="text-3xl mb-4">Register</h2>
             <p className="mb-4">
-              Create your account. It’s free and only takes a minute
+              Create your account. It's free and only takes a minute
             </p>
             <form action="" onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-5">
@@ -81,6 +94,7 @@ const SignUp = () => {
                   name="name"
                   onChange={handleChange}
                   className="border border-gray-400 py-1 px-2"
+                  required
                 />
                 <input
                   type="text"
@@ -90,11 +104,12 @@ const SignUp = () => {
               </div>
               <div className="mt-5">
                 <input
-                  type="text"
+                  type="email"
                   placeholder="Email"
                   name="email"
                   onChange={handleChange}
                   className="border border-gray-400 py-1 px-2 w-full"
+                  required
                 />
               </div>
               <div className="mt-5">
@@ -104,17 +119,27 @@ const SignUp = () => {
                   onChange={handleChange}
                   placeholder="Password"
                   className="border border-gray-400 py-1 px-2 w-full"
+                  required
+                  minLength={6}
                 />
               </div>
               <div className="mt-5">
                 <input
                   type="password"
+                  name="confirmPassword"
+                  onChange={handleChange}
                   placeholder="Confirm Password"
-                  className="border border-gray-400 py-1 px-2 w-full"
+                  className={`border ${!passwordMatch ? 'border-red-500' : 'border-gray-400'} py-1 px-2 w-full`}
+                  required
                 />
               </div>
+              {error && (
+                <Typography color="error" sx={{ mt: 1, fontSize: '0.8rem' }}>
+                  {error}
+                </Typography>
+              )}
               <div className="mt-5">
-                <input type="checkbox" className="border border-gray-400" />
+                <input type="checkbox" className="border border-gray-400" required />
                 <span>
                   I accept the{" "}
                   <a href="#" className="text-purple-500 font-semibold">
@@ -127,7 +152,10 @@ const SignUp = () => {
                 </span>
               </div>
               <div className="mt-5">
-                <button className="w-full bg-purple-500 py-3 text-center text-white">
+                <button 
+                  type="submit"
+                  className="w-full bg-purple-500 py-3 text-center text-white hover:bg-purple-600 transition-colors"
+                >
                   Register Now
                 </button>
               </div>

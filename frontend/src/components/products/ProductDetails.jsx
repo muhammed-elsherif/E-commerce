@@ -6,6 +6,7 @@ import React, { useEffect, useState, useNavigate, useContext } from "react";
 import { RadioGroup } from "@headlessui/react";
 import CardCountContext from "../../contexts/CartCountContext";
 import CartItemContext from "../../contexts/CartItemContext";
+import { productsApi } from "../../services/api";
 
 const productD = {
   colors: [
@@ -41,21 +42,14 @@ const ProductDetails = ({ clickedProduct }) => {
 
   useEffect(() => {
     getProductDetails();
-  });
+  }, [clickedProduct]);
 
   const getProductDetails = async () => {
-    const response = await fetch(
-      `http://localhost:4000/product/${clickedProduct}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const result = await response.json();
-    if (result) {
+    try {
+      const result = await productsApi.getById(clickedProduct);
       setProduct(result);
+    } catch (error) {
+      console.error("Error fetching product details:", error);
     }
   };
 

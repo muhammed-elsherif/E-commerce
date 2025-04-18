@@ -29,6 +29,7 @@ import useProductsSearch from "../../hooks/useProductsSearch";
 import Loader from "../Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../store/cart/cart.actions";
+import { productsApi } from "../../services/api";
 
 
 const ProductList = () => {
@@ -77,15 +78,8 @@ const ProductList = () => {
 
   const getProducts = async () => {
     try {
-      const response = await fetch("http://localhost:4000/products", {
-        method: "GET",
-      });
-      const result = await response.json();
-      if (result) {
-        // setProducts(result);
-        // setIsLoading(false);
-        console.log("Products: " + products);
-      }
+      const result = await productsApi.getAll();
+      console.log("Products: ", result);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -110,18 +104,8 @@ const ProductList = () => {
     setSearchParams(key);
     if (key) {
       try {
-        const response = await fetch(`http://localhost:4000/search/${key}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const result = await response.json();
-        if (result) {
-          // setProducts(result);
-          // console.log("Products: ", result);
-          console.log("Products: ", products);
-        }
+        const result = await productsApi.search(key);
+        console.log("Products: ", result);
       } catch (error) {
         console.error("Error:", error);
       }

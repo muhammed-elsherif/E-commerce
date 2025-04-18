@@ -1,20 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-
-const fetchProductsBySearch = async (searchParams) => {
-  const response = await fetch(`http://localhost:4000/search/${searchParams}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  const result = await response.json();
-  return result;
-};
+import { productsApi } from "../services/api";
 
 const useProductsSearch = (searchParams) => {
   return useQuery({
     queryKey: ["search-products", searchParams],
-    queryFn: () => fetchProductsBySearch(searchParams),
+    queryFn: () => productsApi.search(searchParams),
     enabled: !!searchParams, // Only enable the query when searchParams is truthy
   });
 };
