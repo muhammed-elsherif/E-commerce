@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect("mongodb://localhost:27017/e-commerce");
 
 // const mongoDBUri =
 //   "mongodb+srv://obli:kdvZaOq7RWmwir4k@cluster0.philcn1.mongodb.net/e-commerce";

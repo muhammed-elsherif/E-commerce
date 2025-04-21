@@ -6,12 +6,9 @@ const multer = require("multer");
 const fs = require("fs");
 const AWS = require("aws-sdk");
 // const redis = require("redis");
-const upload = multer();
 require("./db/config");
 const User = require("./db/User");
-const Product = require("./db/Products");
-const Image = require("./db/Images");
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 const app = express();
 
@@ -31,6 +28,18 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+// Import routes
+const authRoutes = require('./routes/auth');
+const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
+const imageRoutes = require('./routes/images');
+
+// Use routes
+app.use('/api', imageRoutes);
+app.use('/', authRoutes);
+app.use('/products', productRoutes);
+// app.use('/orders', orderRoutes);
 
 app.put("/admin", async (req, res) => {
   const userId = req.body;
