@@ -11,11 +11,7 @@ const upload = multer();
 router.get("/", async (req, res) => {
     try {
         const products = await Product.find();
-        if (products.length > 0) {
-            sendResponse(res, products);
-        } else {
-            sendResponse(res, { result: "No Products Found" });
-        }
+        sendResponse(res, products || []);
     } catch (error) {
         sendError(res, "Error loading product list");
     }
@@ -117,11 +113,7 @@ router.put("/:id", verifyToken, isAdmin, upload.array("productPictures", 5), asy
 router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
     try {
         const result = await Product.findByIdAndDelete(req.params.id);
-        if (result) {
-            sendResponse(res, { message: "Product deleted successfully" });
-        } else {
-            sendResponse(res, { result: "No Product found" });
-        }
+        
     } catch (error) {
         sendError(res, "Error deleting product");
     }
@@ -130,14 +122,15 @@ router.delete("/:id", verifyToken, isAdmin, async (req, res) => {
 // Search products
 router.get("/search/:key", async (req, res) => {
     try {
-        const result = await Product.find({
+        const key = req.params.key;
+        const products = await Product.find({
             $or: [
-                { name: { $regex: req.params.key, $options: 'i' } },
-                { company: { $regex: req.params.key, $options: 'i' } },
-                { category: { $regex: req.params.key, $options: 'i' } },
-            ],
+                { name: { $regex: key, $options: 'i' } },
+                { category: { $regex: key, $options: 'i' } },
+                { description: { $regex: key, $options: 'i' } }
+            ]
         });
-        result ? res.send(result) : res.send({ result: "No Products Found" });
+        sendResponse(res, products || []);
     } catch (error) {
         sendError(res, "Error searching products");
     }

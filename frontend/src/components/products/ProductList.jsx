@@ -33,27 +33,23 @@ import { productsApi } from "../../services/api";
 
 
 const ProductList = () => {
-  // const [products, setProducts] = useState([]);
   const [searchParams, setSearchParams] = useState("");
-  // const { data: products, isLoading, isError } = useProducts(searchParams);
-  // const [isLoading, setIsLoading] = useState(false);
   const [cursorPosition, setCursorPosition] = useState(0);
-  const userValidation = JSON.parse(localStorage.getItem("user")).admin;
+  const userValidation = JSON.parse(localStorage.getItem("user"))?.admin || false;
   const allProductsAPI = "all";
   const menCategoryAPI = "Men";
   const womenCategoryAPI = "Women";
   const productsQuery = useProducts();
-  const products = productsQuery.data ?? [];
+  const products = Array.isArray(productsQuery.data) ? productsQuery.data : [];
   const [category, setCategory] = useState(allProductsAPI);
 
   const productsSearchQuery = useProductsSearch(searchParams);
-  const productsSearch = productsSearchQuery.data ?? [];
+  const productsSearch = Array.isArray(productsSearchQuery.data) ? productsSearchQuery.data : [];
 
   const dispatch = useDispatch();
 
   // Filter products based on the selected category
   const filteredProducts = (event, newValue) => {
-    console.log(newValue);
     if (newValue !== null) {
       setCategory(newValue);
     }
@@ -62,19 +58,9 @@ const ProductList = () => {
       : products.filter((product) => product.category === category);
   };
 
-  
-  // const handleAddToCart = (item) => {
-  //   dispatch({ type: 'ADD_TO_CART', payload: item });
-  // };
   const handleAddToCart = (item) => {
     dispatch(addToCart(item));
   };
-
-  // const handleAlignment = (event, newValue) => {
-  //   if (newValue !== null) {
-  //     setmyDate(newValue);
-  //   }
-  // };
 
   const getProducts = async () => {
     try {
