@@ -5,9 +5,7 @@ const { verifyToken } = require('../middleware/auth');
 const { sendResponse, sendError } = require('../utils/response');
 const Payment = require('../db/Payment');
 
-// Additional security middleware for payment routes
 const paymentSecurity = (req, res, next) => {
-    // Validate card number format
     if (req.body.cardNumber) {
         const cardNumber = req.body.cardNumber.replace(/\D/g, '');
         if (!/^\d{13,19}$/.test(cardNumber)) {
@@ -15,14 +13,12 @@ const paymentSecurity = (req, res, next) => {
         }
     }
 
-    // Validate expiry date format
     if (req.body.expiryDate) {
         if (!/^(0[1-9]|1[0-2])\/([0-9]{2})$/.test(req.body.expiryDate)) {
             return sendError(res, 'Invalid expiry date format', 400);
         }
     }
 
-    // Validate CVV format
     if (req.body.cvv) {
         if (!/^\d{3,4}$/.test(req.body.cvv)) {
             return sendError(res, 'Invalid CVV format', 400);
@@ -47,7 +43,6 @@ router.post("/card", verifyToken, paymentSecurity, async (req, res) => {
             return sendError(res, 'This card is already saved', 400);
         }
 
-        // Encrypt sensitive card information
         const encryptedCardData = {
             cardNumber: encrypt(cardNumber),
             expiryDate: encrypt(expiryDate),
@@ -71,7 +66,6 @@ router.post("/card", verifyToken, paymentSecurity, async (req, res) => {
     }
 });
 
-// Get stored card information
 router.get("/cards", verifyToken, async (req, res) => {
     try {
         const cards = await Payment.find({ userId: req.user._id })
@@ -91,7 +85,6 @@ router.get("/cards", verifyToken, async (req, res) => {
     }
 });
 
-// Process payment
 router.post("/process", verifyToken, async (req, res) => {
     try {
         const { paymentId, amount } = req.body;
@@ -111,7 +104,6 @@ router.post("/process", verifyToken, async (req, res) => {
             return sendError(res, 'Payment method not found', 404);
         }
 
-        // Decrypt card information for processing
         const decryptedCardData = {
             cardNumber: decrypt(payment.cardNumber),
             expiryDate: decrypt(payment.expiryDate),
@@ -119,10 +111,6 @@ router.post("/process", verifyToken, async (req, res) => {
             cardholderName: decrypt(payment.cardholderName)
         };
 
-        // Here you would integrate with your payment processor
-        // For example: stripe.charges.create({...})
-        
-        // Simulate payment processing
         const paymentResult = {
             success: true,
             amount,
