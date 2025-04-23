@@ -80,19 +80,11 @@ app.put("/admin", async (req, res) => {
   }
 });
 
-// Database connection
-mongoose.connect('mongodb://localhost:27017/ecommerce', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
-
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/products', require('./routes/products'));
-app.use('/api/orders', require('./routes/orders'));
+// app.use('/api/orders', require('./routes/orders'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
